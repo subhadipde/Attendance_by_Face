@@ -1,12 +1,29 @@
+from cmath import e
 import collections
+from textwrap import fill
 from tkinter import*
 from tkinter import ttk
+import customtkinter as ctk
 from PIL import Image, ImageTk
+
+# custom tkinter setting
+ctk.set_appearance_mode("System")  # Modes: system (default), light, dark
+ctk.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
+
 
 class Student:
     def __init__(self, root):
         self.root=root
-        self.root.geometry("1530x790+0+0")
+
+        # code for full screen height and width
+        Width= root.winfo_screenwidth()               
+        Height= root.winfo_screenheight()               
+        root.geometry("%dx%d" % (Width, Height))
+
+        # for maximize the window
+        root.state('zoomed') 
+
+        # root.attributes('-fullscreen', True)                      # for complete full screen view
         self.root.title("Face Recogniton System")
 
         # bg image
@@ -17,192 +34,206 @@ class Student:
         bg_img=Label(self.root, image=self.photoimg3)
         bg_img.place(x=0,y=0,width=1530,height=790)
 
-        title_lbl=Label(bg_img, text="STUDET MANAGEMENT SYSTEM", font=("times new roman", 35, "bold"), bg="white", fg="red")
-        title_lbl.place(x=0, y=0,width=1530,height=45)
+        title_lbl=ctk.CTkLabel( text="STUDET MANAGEMENT SYSTEM")
+        title_lbl.configure(font=("Lato",25))
+        title_lbl.place(relx=0.5, rely=0.05, anchor=CENTER)
+
+        # height and width of the main frame
+        ht = 550
+        wt = 1200
 
         # Main Frame
-        main_frame=Frame (bg_img, bd=2,bg="white")
-        main_frame.place(x=20, y=55, width=1480,height=600)
+        main_frame = ctk.CTkFrame(root,
+                               width=wt,
+                               height=ht,
+                               corner_radius=10)
+        main_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
+
+
         
         # left label frame
-        Left_frame=LabelFrame(main_frame, bd=2, bg="white", relief=RIDGE, text="Student Details", font=("times new roman",12,"bold"))
-        Left_frame.place(x=10, y=10,width=730,height=580)
+        Left_frame = ctk.CTkFrame(main_frame,
+                               width=wt/2+50,
+                               height=ht,
+                               corner_radius=10)
+        Left_frame.place(relx=0.55, rely=0.5, anchor=E)
 
         # current course information
-        current_course_frame=LabelFrame(Left_frame, bd=2, bg="white", relief=RIDGE, text="Current Course information", font=("times new roman",12,"bold"))
-        current_course_frame.place(x=5, y=10, width=720,height=125)
+        current_course_frame = ctk.CTkFrame(Left_frame,
+                               width=wt/2+80,
+                               height=100,
+                               corner_radius=10)
+        current_course_frame.place(relx=0.5, rely=0, anchor=N)
 
         # Department
-        dep_label=Label(current_course_frame, text="Department", font=("times new roman",13,"bold"), bg="white")
-        dep_label.grid(row=0, column=0, padx=10, sticky=W)
+        dep_label=ctk.CTkLabel(current_course_frame, text="Department")
+        dep_label.configure(font=("Lato",15))
+        dep_label.place(relx=0.2, rely=0.2, anchor=NE)
 
-        dep_combo=ttk.Combobox(current_course_frame, font=("times new roman",13,"bold"), state="readonly", width=20)
+        dep_combo=ttk.Combobox(current_course_frame, font=("times new roman",12,"bold"), state="readonly")
         dep_combo["values"]=("Select Department", "CSE", "IT", "ECE", "Civil", "Mechanical")
         dep_combo.current(0)
-        dep_combo.grid(row=0, column=1, padx=2, pady=10, sticky=W)
+        dep_combo.place(relx=0.4, rely=0.2, anchor=N)
 
-        # Course
-        course_label=Label(current_course_frame, text="Course", font=("times new roman",13,"bold"), bg="white")
-        course_label.grid(row=0, column=2, padx=10, sticky=W)
+        # # Year
+        year_label=ctk.CTkLabel(current_course_frame, text="Year")
+        year_label.configure(font=("Lato",15))
+        year_label.place(relx=0.7, rely=0.7, anchor=E)
 
-        course_combo=ttk.Combobox(current_course_frame, font=("times new roman",13,"bold"), state="readonly", width=20)
-        course_combo["values"]=("Select Course", "FE", "SE","TE","BE")
-        course_combo.current(0)
-        course_combo.grid(row=0,column=3, padx=2, pady=10, sticky=W)
-
-        # Year
-        year_label=Label(current_course_frame, text="Year", font=("times new roman",13,"bold"), bg="white")
-        year_label.grid (row=1,column=0, padx=10, sticky=W)
-
-        year_combo=ttk.Combobox(current_course_frame, font=("times new roman", 13, "bold"), state="readonly",width=20)
-        year_combo["values"]=("Select Year", "2018-19","2019-20", "2020-21","2021-22")
+        year_combo=ttk.Combobox(current_course_frame, font=("times new roman",12,"bold"), state="readonly")
+        year_combo["values"]=("Select Year", "2019-20","2020-21", "2021-22","2022-23")
         year_combo.current(0)
-        year_combo.grid(row=1,column=1, padx=2, pady=10, sticky=W)
+        year_combo.place(relx=0.8, rely=0.6, anchor=N)
 
-        #Semester
-        semester_label=Label(current_course_frame, text="Semester", font=("times new roman",13,"bold"), bg="white")
-        semester_label.grid (row=1,column=2, padx=10, sticky=W)
+        # #Semester
+        semester_label=ctk.CTkLabel(current_course_frame, text="Semester")
+        semester_label.configure(font=("Lato",15))
+        semester_label.place(relx=0.2, rely=0.7, anchor=E)
 
-        semester_combo=ttk.Combobox(current_course_frame, font=("times new roman",13,"bold"), state="readonly",width=20)
+        semester_combo=ttk.Combobox(current_course_frame, font=("times new roman",12,"bold"), state="readonly")
         semester_combo["values"]=("Select Semester", "Sem-1", "Sem-2", "Sem-3", "Sem-4", "Sem-5", "Sem-6", "Sem-7", "Sem-8")
         semester_combo.current(0)
-        semester_combo.grid(row=1,column=3, padx=2, pady=10, sticky=W)
+        semester_combo.place(relx=0.35, rely=0.6, anchor=N)
 
 
-        # Class Student information
-        class_Student_frame=LabelFrame(Left_frame, bd=2, bg="white", relief=RIDGE, text="Class Student Information")
-        class_Student_frame.place(x=5,y=180,width=720,height=300)
+        # # Class Student information
+        class_Student_frame = ctk.CTkFrame(Left_frame,
+                               width=wt/2+80,
+                               height=450,
+                               corner_radius=10)
+        class_Student_frame.place(relx=0.5, rely=1, anchor=S)
 
-        # student id
-        studentId_label=Label(class_Student_frame, text="StudentID: ", font=("times new roman", 13, "bold"),bg="white")
-        studentId_label.grid(row=0,column=0, padx=10, pady=5, sticky=W)
+        # # student id
+        studentId_label=ctk.CTkLabel(class_Student_frame, text="StudentID: ")
+        studentId_label.configure(font=("Lato",14))
+        studentId_label.place(relx=0.2, rely=0.2, anchor=E)
 
-        studentID_entry=ttk.Entry(class_Student_frame, width=20, font=("times new roman", 13, "bold"))
-        studentID_entry.grid(row=0,column=1, padx=10, pady=5, sticky=W)
+        studentID_entry = ctk.CTkEntry(class_Student_frame,
+                               placeholder_text="Enter StudentID here",
+                               width=220,
+                               height=40,
+                               border_width=1,
+                               corner_radius=10)
+        studentID_entry.place(relx=0.4, rely=0.2, anchor=CENTER)
 
-        # student name
-        studenName_label=Label(class_Student_frame, text="Student Name: ", font=("times new roman", 13, "bold"), bg="white")
-        studenName_label.grid(row=0, column=2, padx=10, pady=5, sticky=W)
+        # # student name
+        studenName_label=ctk.CTkLabel(class_Student_frame, text="Student Name: ")
+        studenName_label.configure(font=("Lato",14))
+        studenName_label.place(relx=0.25, rely=0.35, anchor=E)
 
-        studentName_entry=ttk.Entry(class_Student_frame, width=20, font=("times new roman", 13, "bold"))
-        studentName_entry.grid(row=0, column=3, padx=10, pady=5, sticky=W)
+        studentName_entry = ctk.CTkEntry(class_Student_frame,
+                               placeholder_text="Enter Name here",
+                               width=220,
+                               height=40,
+                               border_width=1,
+                               corner_radius=10)
+        studentName_entry.place(relx=0.4, rely=0.35, anchor=CENTER)
 
-        # class didvision
-        class_div_label=Label(class_Student_frame, text="Class Division:", font=("times new roman",13, "bold"), bg="white")
-        class_div_label.grid(row=1,column=0, padx=10, pady=5, sticky=W)
+        # # Roll No
+        roll_no_label=ctk.CTkLabel(class_Student_frame, text="Roll No: ")
+        roll_no_label.configure(font=("Lato",14))
+        roll_no_label.place(relx=0.20, rely=0.5, anchor=E)
 
-        class_div_entry=ttk.Entry(class_Student_frame, width=20, font=("times new roman", 13, "bold"))
-        class_div_entry.grid(row=1, column=1, padx=10, pady=5, sticky=W)
+        roll_no_entry = ctk.CTkEntry(class_Student_frame,
+                               placeholder_text="Enter Roll here",
+                               width=220,
+                               height=40,
+                               border_width=1,
+                               corner_radius=10)
+        roll_no_entry.place(relx=0.4, rely=0.5, anchor=CENTER)
 
-        # Roll No
-        roll_no_label=Label(class_Student_frame, text="Roll No: ", font=("times new roman",13,"bold"), bg="white")
-        roll_no_label.grid(row=1,column=2, padx=10, pady=5, sticky=W)
+        # # Gender
+        gender_label=ctk.CTkLabel(class_Student_frame, text="Gender: ")
+        gender_label.configure(font=("Lato",14))
+        gender_label.place(relx=0.8, rely=0.35, anchor=E)
 
-        roll_no_entry=ttk.Entry(class_Student_frame, width=20, font=("times new roman",13,"bold"))
-        roll_no_entry.grid(row=1,column=3, padx=10, pady=5,sticky=W)
+        gender_combo=ttk.Combobox(class_Student_frame, font=("times new roman",12,"bold"), state="readonly", width=10)
+        gender_combo["values"]=("Select", "Male", "Female", "Others")
+        gender_combo.current(0)
+        gender_combo.place(relx=0.8, rely=0.35, anchor=W)
 
-        # Gender
-        gender_label=Label(class_Student_frame, text="Gender:", font=("times new roman",13,"bold"), bg="white")
-        gender_label.grid(row=2, column=0, padx=10, pady=5, sticky=W)
+        # # DOB
+        dob_label=ctk.CTkLabel(class_Student_frame, text="DOB: ")
+        dob_label.configure(font=("Lato",14))
+        dob_label.place(relx=0.20, rely=0.65, anchor=E)
 
-        gender_entry=ttk.Entry(class_Student_frame, width=20, font=("times new roman",13,"bold"))
-        gender_entry.grid(row=2,column=1, padx=10, pady=5, sticky=W)
+        dob_entry = ctk.CTkEntry(class_Student_frame,
+                               placeholder_text="DD/MM/YYYY",
+                               width=140,
+                               height=40,
+                               border_width=1,
+                               corner_radius=10)
+        dob_entry.place(relx=0.3, rely=0.65, anchor=CENTER)
 
-        # DOB
-        dob_label=Label(class_Student_frame, text="DOB: ", font=("times new roman", 13, "bold"), bg="white")
-        dob_label.grid(row=2, column=2, padx=10, pady=5, sticky=W)
+        phone_label=ctk.CTkLabel(class_Student_frame, text="Phone No: ")
+        phone_label.configure(font=("Lato",14))
+        phone_label.place(relx=0.65, rely=0.65, anchor=E)
 
-        dob_entry=ttk.Entry(class_Student_frame, width=20, font=("times new roman",13,"bold"))
-        dob_entry.grid(row=2, column=3, padx=10, pady=5, sticky=W)
+        phone_entry = ctk.CTkEntry(class_Student_frame,
+                               placeholder_text="Enter Phone No here",
+                               width=180,
+                               height=40,
+                               border_width=1,
+                               corner_radius=10)
+        phone_entry.place(relx=0.8, rely=0.65, anchor=CENTER)
 
-        # Email
-        email_label=Label(class_Student_frame, text="Email: ", font=("times new roman", 13, "bold"), bg="white")
-        email_label.grid(row=3, column=0, padx=10, pady=5, sticky=W)
+        # #buttons
 
-        email_entry=ttk.Entry(class_Student_frame,width=20, font=("times new roman",13, "bold"))
-        email_entry.grid(row=3, column=1, padx=10, pady=5, sticky=W)
+        save_btn=ctk.CTkButton(class_Student_frame, text="Save", cursor="hand2")
+        save_btn.place(relx=0.20, rely=0.85,width=160,height=60,  anchor=S)
 
-        #phone no
-        phone_label=Label (class_Student_frame, text="Phone No: ", font=("times new roman", 13, "bold"), bg="white")
-        phone_label.grid(row=3,column=2, padx=10, pady=5, sticky=W)
+        update_btn=ctk.CTkButton(class_Student_frame, text="Update", cursor="hand2")
+        update_btn.place(relx=0.40, rely=0.85,width=160,height=60,  anchor=S)
 
-        phone_entry=ttk.Entry(class_Student_frame, width=20, font=("times new roman",13, "bold"))
-        phone_entry.grid(row=3, column=3,padx=10, pady=5, sticky=W)
+        delete_btn=ctk.CTkButton(class_Student_frame, text="Delete", cursor="hand2", fg_color="red")
+        delete_btn.place(relx=0.60, rely=0.85,width=160,height=60,  anchor=S)
 
-        # Address
-        address_label=Label(class_Student_frame, text="Address:", font=("times new roman",13, "bold"), bg="white")
-        address_label.grid(row=4, column=0, padx=10, pady=5, sticky=W)
+        reset_btn=ctk.CTkButton(class_Student_frame, text="Reset", cursor="hand2")
+        reset_btn.place(relx=0.80, rely=0.85,width=160,height=60,  anchor=S)
 
-        address_entry=ttk.Entry(class_Student_frame, width=20, font=("times new roman", 13, "bold"))
-        address_entry.grid(row=4, column=1, padx=10, pady=5, sticky=W)
+        take_photo_btn=ctk.CTkButton(class_Student_frame, text="Take Photo", cursor="hand2")
+        take_photo_btn.place(relx=0.3, rely=0.95,width=400,height=60,  anchor=S)
 
-        # radio button
-        radiobtn1=ttk.Radiobutton(class_Student_frame, text="Take Photo Sample", value="Yes")
-        radiobtn1.grid(row=6, column=0)
+        update_photo_btn=ctk.CTkButton(class_Student_frame, text="Update Photo", cursor="hand2")
+        update_photo_btn.place(relx=0.7, rely=0.95,width=400,height=60,  anchor=S)
 
-        radiobtn2=ttk.Radiobutton(class_Student_frame, text="No Photo Sample", value="No")
-        radiobtn2.grid(row=6, column=1)
+        # # Right label frame
+        Right_frame = ctk.CTkFrame(main_frame,
+                               width=wt/2-75,
+                               height=ht,
+                               corner_radius=10)
+        Right_frame.place(relx=0.56, rely=0.5, anchor=W)
 
-        #buttons frame
-        btn_frame1=Frame(class_Student_frame, bd=2, relief=RIDGE, bg="white")
-        btn_frame1.place(x=0, y=200, width=715, height=35)
+        # # ===========================Search System=======================================================
+        search_label=ctk.CTkLabel(Right_frame, text="Search By: ")
+        search_label.configure(font=("Lato",14))
+        search_label.place(relx=0.05, rely=0.1, anchor=W)
 
-        save_btn=Button(btn_frame1, text="Save", width=17 , font=("times new roman", 13, "bold"), bg="blue", fg="white")
-        save_btn.grid(row=0,column=0)
-
-        update_btn=Button(btn_frame1, text="Update", width=17, font=("times new roman",13,"bold"), bg="blue", fg="white")
-        update_btn.grid(row=0, column=1)
-
-        delete_btn=Button(btn_frame1, text="Delete", width=17, font=("times new roman",13,"bold"), bg="blue", fg="white")
-        delete_btn.grid (row=0, column=2)
-
-        reset_btn=Button(btn_frame1, text="Reset",width=17, font=("times new roman",13,"bold"),bg="blue", fg="white")
-        reset_btn.grid(row=0,column=3)
-
-        btn_frame2=Frame(class_Student_frame, bd=2, relief=RIDGE, bg="white")
-        btn_frame2.place(x=0, y=235, width=715, height=35)
-
-        take_photo_btn=Button(btn_frame2, text="Take Photo Sample", width=35, font=("times new roman",13,"bold"), bg="blue", fg="white")
-        take_photo_btn.grid(row=0,column=0)
-
-        update_photo_btn=Button(btn_frame2, text="Update Photo Sample", width=35, font=("times new roman",13,"bold"), bg="blue", fg="white")
-        update_photo_btn.grid(row=0, column=1)
-
-
-
-        # Right label frame
-        Right_frame=LabelFrame(main_frame, bd=2,bg="white", relief=RIDGE,text="Student Details", font=("times new roman",12,"bold"))
-        Right_frame.place(x=750,y=10,width=720,height=580)
-
-        # ===========================Search System=======================================================
-        Search_frame=LabelFrame(Right_frame, bd=2, bg="white", relief=RIDGE, text="Search System", font=("times new roman",12,"bold"))
-        Search_frame.place(x=5, y=10, width=710,height=70)
-
-        search_label=Label(Search_frame, text="Search By: ", font=("times new roman",15,"bold"),bg="red", fg="white")
-        search_label.grid (row=0,column=0, padx=10, pady=5, sticky=W)
-
-        search_combo=ttk.Combobox(Search_frame, font=("times new roman",13,"bold"), state="readonly", width=15)
-        search_combo["values"]=("Select", "Roll_No", "Phone_No")
+        search_combo=ttk.Combobox(Right_frame, font=("times new roman",12,"bold"), state="readonly", width=10)
+        search_combo["values"]=("Select", "Roll_No","Student ID")
         search_combo.current(0)
-        search_combo.grid (row=0, column=1, padx=2, pady=10, sticky=W)
+        search_combo.place(relx=0.27, rely=0.1, anchor=W)
 
-        search_entry=ttk.Entry(Search_frame, width=15, font=("times new roman",13,"bold"))
-        search_entry.grid(row=0, column=2, padx=10, pady=5, sticky=W)
+        search_entry = ctk.CTkEntry(Right_frame,
+                               placeholder_text="Enter here",
+                               width=200,
+                               height=40,
+                               border_width=1,
+                               corner_radius=10)
+        search_entry.place(relx=0.5, rely=0.1, anchor=W)
 
-        search_btn=Button(Search_frame, text="Search", width=12, font=("times new roman",12,"bold"), bg="blue", fg="white")
-        search_btn.grid(row=0,column=3,padx=4)
+        search_btn=ctk.CTkButton(Right_frame, text="Search", cursor="hand2")
+        search_btn.place(relx=0.6, rely=0.2,width=180,height=60,  anchor=W)
 
-        showAll_btn=Button (Search_frame, text="Show All", width=12, font=("times new roman",12,"bold"),bg="blue", fg="white")
-        showAll_btn.grid(row=0, column=4, padx=4)
 
-        # # ===========================Table Frame=======================================================
+        # # # ===========================Table Frame=======================================================
         table_frame=Frame(Right_frame, bd=2, bg="white", relief=RIDGE)
-        table_frame.place(x=5, y=210, width=710, height=350)
+        table_frame.place(relx=0.5, rely=0.9,width=wt/2+100,height=ht-100,  anchor=S)
 
         scroll_x=ttk.Scrollbar(table_frame, orient=HORIZONTAL)
         scroll_y=ttk.Scrollbar(table_frame, orient=VERTICAL)
 
-        self.student_table=ttk.Treeview(table_frame, columns=("dep","course","year","sem","id","name","roll","gender","div","dob","email","phone","address","photo"), xscrollcommand=scroll_x.set, yscrollcommand=scroll_y.set)
+        self.student_table=ttk.Treeview(table_frame, columns=("dep","year","sem","id","name","roll","gender","dob","phone","photo"), xscrollcommand=scroll_x.set, yscrollcommand=scroll_y.set)
 
         scroll_x.pack(side=BOTTOM, fill=X)
         scroll_y.pack(side=RIGHT, fill=Y)
@@ -210,39 +241,31 @@ class Student:
         scroll_y.config(command=self.student_table.yview)
 
         self.student_table.heading("dep", text="Department")
-        self.student_table.heading("course", text="Course")
         self.student_table.heading("year", text="Year")
         self.student_table.heading("sem", text="Semester")
         self.student_table.heading("id", text="StudentId")
         self.student_table.heading ("name", text="Name")
         self.student_table.heading ("roll", text="Roll")
         self.student_table.heading ("gender", text="Gender")
-        self.student_table.heading("div", text="Division")
         self.student_table.heading("dob", text="DOB")
-        self.student_table.heading ("email", text="Email")
         self.student_table.heading("phone", text="Phone")
-        self.student_table.heading("address", text="Address")
         self.student_table.heading("photo", text="PhotoSampleStatus")
         self.student_table["show"]="headings"
 
         self.student_table.column("dep", width=100)
-        self.student_table.column("course", width=100)
         self.student_table.column("year", width=100)
         self.student_table.column("sem", width=100)
         self.student_table.column("id", width=100)
         self.student_table.column("name", width=100)
         self.student_table.column("roll", width=100)
         self.student_table.column("gender", width=100)
-        self.student_table.column("div", width=100)
         self.student_table.column("dob", width=100)
-        self.student_table.column("email", width=100)
         self.student_table.column("phone", width=100)
-        self.student_table.column("address", width=100)
         self.student_table.column("photo", width=150)
 
         self.student_table.pack(fill=BOTH,expand=1)
 
 if __name__ == "__main__":
-    root=Tk()
+    root=ctk.CTk()
     obj=Student(root)
     root.mainloop()
