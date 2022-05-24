@@ -4,6 +4,8 @@ from tkinter import messagebox
 import customtkinter as ctk
 from PIL import Image, ImageTk
 import mysql.connector
+import cv2
+import os
 
 # custom tkinter setting
 ctk.set_appearance_mode("System")  # Modes: system (default), light, dark
@@ -42,7 +44,7 @@ class Student:
         self.gender = StringVar()
         self.phone = StringVar()
         self.dob = StringVar()
-        self.add = StringVar()
+        self.place = StringVar()
         self.search = StringVar()
         self.search_entry = StringVar()
 
@@ -159,7 +161,7 @@ class Student:
         add_label.place(relx=0.20, rely=0.5, anchor=E)
 
         add_entry = ctk.CTkEntry(class_Student_frame,
-                               textvariable=self.add,
+                               textvariable=self.place,
                                placeholder_text="Enter Address here",
                                width=450,
                                height=40,
@@ -208,19 +210,19 @@ class Student:
 
         # #buttons
         
-        save_btn=ctk.CTkButton(class_Student_frame,command=self.add_data, text="Save", cursor="hand2")
+        save_btn=ctk.CTkButton(class_Student_frame, command=self.add_data, text="Save", cursor="hand2")
         save_btn.place(relx=0.15, rely=0.85,width=160,height=60,  anchor=S)
 
-        update_btn=ctk.CTkButton(class_Student_frame, text="Update", cursor="hand2")
+        update_btn=ctk.CTkButton(class_Student_frame, command=self.update_data, text="Update", cursor="hand2")
         update_btn.place(relx=0.35, rely=0.85,width=160,height=60,  anchor=S)
 
-        delete_btn=ctk.CTkButton(class_Student_frame, text="Delete", cursor="hand2", fg_color="red", text_font=("bold"))
+        delete_btn=ctk.CTkButton(class_Student_frame, command=self.delete_data, text="Delete", cursor="hand2", fg_color="red", text_font=("bold"))
         delete_btn.place(relx=0.65, rely=0.85,width=160,height=60,  anchor=S)
 
         reset_btn=ctk.CTkButton(class_Student_frame, command=self.reset_data, text="Reset", cursor="hand2")
         reset_btn.place(relx=0.85, rely=0.85,width=160,height=60,  anchor=S)
 
-        take_photo_btn=ctk.CTkButton(class_Student_frame, text="Take Photo", cursor="hand2")
+        take_photo_btn=ctk.CTkButton(class_Student_frame, command=self.take_photo, text="Take Photo", cursor="hand2")
         take_photo_btn.place(relx=0.3, rely=0.98,width=300,height=60,  anchor=S)
 
         update_photo_btn=ctk.CTkButton(class_Student_frame, text="Update Photo", cursor="hand2")
@@ -264,7 +266,7 @@ class Student:
         scroll_x=ttk.Scrollbar(table_frame, orient=HORIZONTAL)
         scroll_y=ttk.Scrollbar(table_frame, orient=VERTICAL)
 
-        self.student_table=ttk.Treeview(table_frame, columns=("dep","batch","sem","id","name","gender","phone","dob","add"), xscrollcommand=scroll_x.set, yscrollcommand=scroll_y.set)
+        self.student_table=ttk.Treeview(table_frame, columns=("dep","batch","sem","id","name","gender","phone","dob","place"), xscrollcommand=scroll_x.set, yscrollcommand=scroll_y.set)
 
         scroll_x.pack(side=BOTTOM, fill=X)
         scroll_y.pack(side=RIGHT, fill=Y)
@@ -279,7 +281,7 @@ class Student:
         self.student_table.heading ("gender", text="Gender")
         self.student_table.heading("phone", text="Phone")
         self.student_table.heading("dob", text="DOB")
-        self.student_table.heading ("add", text="Address")
+        self.student_table.heading ("place", text="Address")
         # self.student_table.heading("photo", text="Photo")
         self.student_table["show"]="headings"
 
@@ -291,7 +293,7 @@ class Student:
         self.student_table.column("gender", width=65)
         self.student_table.column("phone", width=90)
         self.student_table.column("dob", width=90)
-        self.student_table.column("add", width=150)
+        self.student_table.column("place", width=150)
         # self.student_table.column("photo", width=60)
 
         self.student_table.pack(fill=BOTH,expand=1)
@@ -306,7 +308,7 @@ class Student:
 
     # -----------------function works-----------------------------------------------------------------------
     def add_data(self):
-        if self.dep.get()=="Select Department" or self.batch.get()=="Select Batch" or self.sem.get()=="Select Semester" or self.id.get()=="" or self.add.get()=="":
+        if self.dep.get()=="Select Department" or self.batch.get()=="Select Batch" or self.sem.get()=="Select Semester" or self.id.get()=="" or self.place.get()=="":
             messagebox.showerror("Error", "All (*) fields are required!", parent=self.root)
         else:
             try:
@@ -321,7 +323,7 @@ class Student:
                                                                                             self.gender.get(),
                                                                                             self.phone.get(),
                                                                                             self.dob.get(),
-                                                                                            self.add.get()
+                                                                                            self.place.get()
 
                                                                                         ))
                 conn.commit()
@@ -361,20 +363,146 @@ class Student:
         self.gender.set(data[5]),
         self.phone.set(data[6]),
         self.dob.set(data[7]),
-        self.add.set (data[8])
+        self.place.set (data[8])
+    
+    # ============update function================
+    def update_data(self):
+        if self.dep.get()=="Select Department" or self.batch.get()=="Select Batch" or self.sem.get()=="Select Semester" or self.id.get()=="" or self.place.get()=="":
+            messagebox.showerror("Error", "All (*) fields are required!", parent=self.root)
+        else:
+            try:
+                Update=messagebox.askyesno("Update","Do you want to update this student details", parent=self.root)
+                if Update>0:
+                    conn=mysql.connector.connect(host="localhost", username="root", password="Subhadip@321#", database="face_recognition")
+                    my_cursor=conn.cursor()
+                    my_cursor.execute("update student set dept=%s,batch=%s,sem=%s,name=%s,gender=%s,phone=%s,dob=%s,place=%s where id=%s",(
+                                                                                                                                        self.dep.get(),
+                                                                                                                                        self.batch.get(),
+                                                                                                                                        self.sem.get(),
+                                                                                                                                        self.name.get(),
+                                                                                                                                        self.gender.get(),
+                                                                                                                                        self.phone.get(),
+                                                                                                                                        self.dob.get(),
+                                                                                                                                        self.place.get(),
+                                                                                                                                        self.id.get()
 
+                                                                                                                                    ))
+                else:
+                    if not Update:
+                        return
+                messagebox.showinfo("Success","Students Details successfully updated.", parent=self.root)
+                conn.commit()
+                self.fetch_data()
+                conn.close()
+            except Exception as es:
+                messagebox.showerror("Error",f"Due To:{str(es)}", parent=self.root)
+    
+
+    # ============Delete function================
+    def delete_data(self):
+        if self.id.get()=="":
+            messagebox.showerror("Error","Student ID must be required!", parent=self.root)
+        else:
+            try:
+                Delete=messagebox.askyesno("Delete","Do you want to delete the details of this student", parent=self.root)
+                if Delete>0:
+                    conn=mysql.connector.connect(host="localhost", username="root", password="Subhadip@321#", database="face_recognition")
+                    my_cursor=conn.cursor()
+                    sql="delete from student where id=%s"
+                    val=(self.id.get(),)
+                    my_cursor.execute(sql,val)
+                else:
+                    if not Delete:
+                        return
+                conn.commit()
+                self.fetch_data()
+                conn.close()
+                messagebox.showinfo("Success","Deletion Successful.", parent=self.root)
+            except Exception as es:
+                messagebox.showerror("Error",f"Due To:{str(es)}", parent=self.root)
+
+    # ============Reset function================
     def reset_data(self):
         self.dep.set("Select Department")
-        self.year.set("Select Year")
+        self.batch.set("Select Batch")
         self.sem.set("Select Semester")
         self.id.set("")
         self.name.set("")
-        self.roll.set("")
-        self.dob.set("")
-        self.gender.set("Select")
+        self.gender.set("Select Gender")
         self.phone.set("")
+        self.dob.set("")
+        self.place.set("")
         
         messagebox.showinfo("Reset", "Reset successful")
+    
+
+    # =============Take Sample Photos====================
+    def take_photo(self):
+        if self.dep.get()=="Select Department" or self.batch.get()=="Select Batch" or self.sem.get()=="Select Semester" or self.id.get()=="" or self.place.get()=="":
+            messagebox.showerror("Error", "All (*) fields are required!", parent=self.root)
+        else:
+            try:
+                conn=mysql.connector.connect(host="localhost", username="root", password="Subhadip@321#", database="face_recognition")
+                my_cursor=conn.cursor()
+                my_cursor.execute("select * from student")
+                mydata=my_cursor.fetchall()
+                c=0
+                for i in mydata:
+                    c += 1
+                my_cursor.execute("update student set dept=%s,batch=%s,sem=%s,name=%s,gender=%s,phone=%s,dob=%s,place=%s where id=%s",(
+                                                                                                                                        self.dep.get(),
+                                                                                                                                        self.batch.get(),
+                                                                                                                                        self.sem.get(),
+                                                                                                                                        self.name.get(),
+                                                                                                                                        self.gender.get(),
+                                                                                                                                        self.phone.get(),
+                                                                                                                                        self.dob.get(),
+                                                                                                                                        self.place.get(),
+                                                                                                                                        self.id.get()==c+1
+
+                                                                                                                                    ))
+                conn.commit()
+                self.fetch_data()
+                self.reset_data()
+                conn.close()
+
+                face_classifier=cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+
+                def face_cropped(img):
+                    gray=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+                    faces=face_classifier.detectMultiScale(gray,1.3,5)      #scaling factor=1.3    #Minimum Neighbor=5
+
+                    for (x,y,w,h) in faces:
+                        face_cropped=img[y:y+h,x:x+w]
+                        return face_cropped
+                    
+                cap=cv2.VideoCapture(0)
+                count=0
+                while True:
+                    ret,my_frame=cap.read()
+                    if face_cropped(my_frame) is not None:
+                        count += 1
+                        face=cv2.resize(face_cropped(my_frame),(450,450))
+                        face=cv2.cvtColor(face,cv2.COLOR_BGR2GRAY)
+                        file_name_path="data/user."+str(c)+"."+str(count)+".jpg"
+                        cv2.imwrite(file_name_path,face)
+                        cv2.putText(face,str(count),(50,50),cv2.FONT_HERSHEY_COMPLEX,2,(0,255,0),2)
+                        cv2.imshow("Crooped Face",face)
+                    
+                    if cv2.waitKey(1)==13 or int(count)==50:
+                        break
+                cap.release()
+                cv2.destroyAllWindows()
+                messagebox.showinfo("Result","Generating data sets compled!!!!", parent=self.root)
+            except Exception as es:
+                messagebox.showerror("Error",f"Due To:{str(es)}", parent=self.root)
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     root=ctk.CTk()
