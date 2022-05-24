@@ -63,10 +63,10 @@ class Face_Recognition_System:
         b6_1=ctk.CTkButton(text="Exit", cursor="hand2", command = root.destroy, fg_color="red", text_font=("Verdana", 12))
         b6_1.place(relx=0.8, rely=0.8,width=320,height=80,  anchor=CENTER)
 
-        # End Label
-        end_lbl=ctk.CTkLabel(text="Created By The Indian Coding Club")
-        end_lbl.configure(font=("Helvetica", 10, "bold italic"), fg="grey")
-        end_lbl.place(relx=0.5, rely=0.98, anchor=CENTER)
+        # # End Label
+        # end_lbl=ctk.CTkLabel(text="Created By The Indian Coding Club")
+        # end_lbl.configure(font=("Helvetica", 10, "bold italic"), fg="grey")
+        # end_lbl.place(relx=0.5, rely=0.98, anchor=CENTER)
 
     #==========Functions buttons=======================
     def student_details(self):
