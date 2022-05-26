@@ -5,7 +5,6 @@ import customtkinter as ctk
 from PIL import Image, ImageTk
 import mysql.connector
 import cv2
-import os
 
 # custom tkinter setting
 ctk.set_appearance_mode("System")  # Modes: system (default), light, dark
@@ -39,7 +38,7 @@ class Student:
         self.dep = StringVar()
         self.batch = StringVar()
         self.sem = StringVar()
-        self.id = StringVar()
+        self.roll = StringVar()
         self.name = StringVar()
         self.gender = StringVar()
         self.phone = StringVar()
@@ -127,14 +126,14 @@ class Student:
                                corner_radius=10)
         class_Student_frame.place(relx=0.5, rely=1, anchor=S)
 
-        # # student id
-        studentId_label=ctk.CTkLabel(class_Student_frame, text="StudentID*: ")
+        # # Roll No
+        studentId_label=ctk.CTkLabel(class_Student_frame, text="Roll No.*: ")
         studentId_label.configure(font=("Lato",14))
         studentId_label.place(relx=0.2, rely=0.2, anchor=E)
 
         studentID_entry = ctk.CTkEntry(class_Student_frame,
-                               textvariable=self.id,
-                               placeholder_text="Enter StudentID here",
+                               textvariable=self.roll,
+                               placeholder_text="Enter Roll No here",
                                width=220,
                                height=40,
                                border_width=1,
@@ -266,7 +265,7 @@ class Student:
         scroll_x=ttk.Scrollbar(table_frame, orient=HORIZONTAL)
         scroll_y=ttk.Scrollbar(table_frame, orient=VERTICAL)
 
-        self.student_table=ttk.Treeview(table_frame, columns=("dep","batch","sem","id","name","gender","phone","dob","place"), xscrollcommand=scroll_x.set, yscrollcommand=scroll_y.set)
+        self.student_table=ttk.Treeview(table_frame, columns=("dep","batch","sem","roll","name","gender","phone","dob","place"), xscrollcommand=scroll_x.set, yscrollcommand=scroll_y.set)
 
         scroll_x.pack(side=BOTTOM, fill=X)
         scroll_y.pack(side=RIGHT, fill=Y)
@@ -276,7 +275,7 @@ class Student:
         self.student_table.heading("dep", text="Department")
         self.student_table.heading("batch", text="Batch")
         self.student_table.heading("sem", text="Semester")
-        self.student_table.heading("id", text="Id")
+        self.student_table.heading("roll", text="Roll")
         self.student_table.heading ("name", text="Name")
         self.student_table.heading ("gender", text="Gender")
         self.student_table.heading("phone", text="Phone")
@@ -288,7 +287,7 @@ class Student:
         self.student_table.column("dep", width=95)
         self.student_table.column("batch", width=90)
         self.student_table.column("sem", width=80)
-        self.student_table.column("id", width=35)
+        self.student_table.column("roll", width=35)
         self.student_table.column("name", width=150)
         self.student_table.column("gender", width=65)
         self.student_table.column("phone", width=90)
@@ -308,7 +307,7 @@ class Student:
 
     # -----------------function works-----------------------------------------------------------------------
     def add_data(self):
-        if self.dep.get()=="Select Department" or self.batch.get()=="Select Batch" or self.sem.get()=="Select Semester" or self.id.get()=="" or self.place.get()=="":
+        if self.dep.get()=="Select Department" or self.batch.get()=="Select Batch" or self.sem.get()=="Select Semester" or self.roll.get()=="" or self.place.get()=="":
             messagebox.showerror("Error", "All (*) fields are required!", parent=self.root)
         else:
             try:
@@ -318,7 +317,7 @@ class Student:
                                                                                             self.dep.get(),
                                                                                             self.batch.get(),
                                                                                             self.sem.get(),
-                                                                                            self.id.get(),
+                                                                                            self.roll.get(),
                                                                                             self.name.get(),
                                                                                             self.gender.get(),
                                                                                             self.phone.get(),
@@ -358,7 +357,7 @@ class Student:
         self.dep.set(data[0]),
         self.batch.set(data[1]),
         self.sem.set(data[2]),
-        self.id.set(data[3]),
+        self.roll.set(data[3]),
         self.name.set(data[4]),
         self.gender.set(data[5]),
         self.phone.set(data[6]),
@@ -367,7 +366,7 @@ class Student:
     
     # ============update function================
     def update_data(self):
-        if self.dep.get()=="Select Department" or self.batch.get()=="Select Batch" or self.sem.get()=="Select Semester" or self.id.get()=="" or self.place.get()=="":
+        if self.dep.get()=="Select Department" or self.batch.get()=="Select Batch" or self.sem.get()=="Select Semester" or self.roll.get()=="" or self.place.get()=="":
             messagebox.showerror("Error", "All (*) fields are required!", parent=self.root)
         else:
             try:
@@ -375,7 +374,7 @@ class Student:
                 if Update>0:
                     conn=mysql.connector.connect(host="localhost", username="root", password="Subhadip@321#", database="face_recognition")
                     my_cursor=conn.cursor()
-                    my_cursor.execute("update student set dept=%s,batch=%s,sem=%s,name=%s,gender=%s,phone=%s,dob=%s,place=%s where id=%s",(
+                    my_cursor.execute("update student set dept=%s,batch=%s,sem=%s,name=%s,gender=%s,phone=%s,dob=%s,place=%s where roll=%s",(
                                                                                                                                         self.dep.get(),
                                                                                                                                         self.batch.get(),
                                                                                                                                         self.sem.get(),
@@ -384,7 +383,7 @@ class Student:
                                                                                                                                         self.phone.get(),
                                                                                                                                         self.dob.get(),
                                                                                                                                         self.place.get(),
-                                                                                                                                        self.id.get()
+                                                                                                                                        self.roll.get()
 
                                                                                                                                     ))
                 else:
@@ -400,7 +399,7 @@ class Student:
 
     # ============Delete function================
     def delete_data(self):
-        if self.id.get()=="":
+        if self.roll.get()=="":
             messagebox.showerror("Error","Student ID must be required!", parent=self.root)
         else:
             try:
@@ -408,8 +407,8 @@ class Student:
                 if Delete>0:
                     conn=mysql.connector.connect(host="localhost", username="root", password="Subhadip@321#", database="face_recognition")
                     my_cursor=conn.cursor()
-                    sql="delete from student where id=%s"
-                    val=(self.id.get(),)
+                    sql="delete from student where roll=%s"
+                    val=(self.roll.get(),)
                     my_cursor.execute(sql,val)
                 else:
                     if not Delete:
@@ -426,7 +425,7 @@ class Student:
         self.dep.set("Select Department")
         self.batch.set("Select Batch")
         self.sem.set("Select Semester")
-        self.id.set("")
+        self.roll.set("")
         self.name.set("")
         self.gender.set("Select Gender")
         self.phone.set("")
@@ -438,7 +437,7 @@ class Student:
 
     # =============Take Sample Photos====================
     def take_photo(self):
-        if self.dep.get()=="Select Department" or self.batch.get()=="Select Batch" or self.sem.get()=="Select Semester" or self.id.get()=="" or self.place.get()=="":
+        if self.dep.get()=="Select Department" or self.batch.get()=="Select Batch" or self.sem.get()=="Select Semester" or self.roll.get()=="" or self.place.get()=="":
             messagebox.showerror("Error", "All (*) fields are required!", parent=self.root)
         else:
             try:
@@ -446,10 +445,10 @@ class Student:
                 my_cursor=conn.cursor()
                 my_cursor.execute("select * from student")
                 mydata=my_cursor.fetchall()
-                c=0
-                for i in mydata:
-                    c += 1
-                my_cursor.execute("update student set dept=%s,batch=%s,sem=%s,name=%s,gender=%s,phone=%s,dob=%s,place=%s where id=%s",(
+                c=self.roll.get()
+                # for i in mydata:
+                #     c += 1
+                my_cursor.execute("update student set dept=%s,batch=%s,sem=%s,name=%s,gender=%s,phone=%s,dob=%s,place=%s where roll=%s",(
                                                                                                                                         self.dep.get(),
                                                                                                                                         self.batch.get(),
                                                                                                                                         self.sem.get(),
@@ -458,7 +457,7 @@ class Student:
                                                                                                                                         self.phone.get(),
                                                                                                                                         self.dob.get(),
                                                                                                                                         self.place.get(),
-                                                                                                                                        self.id.get()==c+1
+                                                                                                                                        self.roll.get()
 
                                                                                                                                     ))
                 conn.commit()
@@ -488,6 +487,8 @@ class Student:
                         cv2.imwrite(file_name_path,face)
                         cv2.putText(face,str(count),(50,50),cv2.FONT_HERSHEY_COMPLEX,2,(0,255,0),2)
                         cv2.imshow("Crooped Face",face)
+                    else:
+                        messagebox.showerror("Error","You are not visible properly!!!", parent=self.root)
                     
                     if cv2.waitKey(1)==13 or int(count)==50:
                         break
