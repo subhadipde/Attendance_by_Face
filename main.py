@@ -7,6 +7,8 @@ import cv2
 import os
 import numpy as np
 import mysql.connector
+from datetime import datetime
+from attendance import Attendance
 
 # custom tkinter setting
 ctk.set_appearance_mode("System")  # Modes: system (default), light, dark
@@ -51,7 +53,7 @@ class Face_Recognition_System:
         b2_1.place(relx=0.5, rely=0.4,width=320,height=80,  anchor=CENTER)
 
         # Attendance button
-        b3_1=ctk.CTkButton(text="Attendance", cursor="hand2", text_font=("Verdana", 12))
+        b3_1=ctk.CTkButton(text="Attendance", command=self.attendance_details, cursor="hand2", text_font=("Verdana", 12))
         b3_1.place(relx=0.8, rely=0.4,width=320,height=80,  anchor=CENTER)
 
         # Train Data button
@@ -65,11 +67,6 @@ class Face_Recognition_System:
         # Exit button        
         b6_1=ctk.CTkButton(text="Exit", cursor="hand2", command = root.destroy, fg_color="red", text_font=("Verdana", 12))
         b6_1.place(relx=0.8, rely=0.8,width=320,height=80,  anchor=CENTER)
-
-        # # End Label
-        # end_lbl=ctk.CTkLabel(text="Created By The Indian Coding Club")
-        # end_lbl.configure(font=("Helvetica", 10, "bold italic"), fg="grey")
-        # end_lbl.place(relx=0.5, rely=0.98, anchor=CENTER)
 
     #==========Functions buttons for Student=======================
     def student_details(self):
@@ -105,6 +102,20 @@ class Face_Recognition_System:
         clf.write("classifier.xml")
         cv2.destroyAllWindows()
         messagebox.showinfo("Result","Training datasets complete", parent=self.root)
+    
+    # =========================Attendance===========================
+    def mark_attendance(self,i,n,d):
+        with open("attendance.csv","r+",newline="\n") as f:
+            myDataList=f.readlines()
+            name_list=[]
+            for line in myDataList:
+                entry=line.split((","))
+                name_list.append(entry[0])
+            if((i not in name_list) and (n not in name_list) and (d not in name_list)):
+                now=datetime.now()
+                d1=now.strftime ("%d/%m/%Y")
+                dtString=now.strftime("%H:%M:%S")
+                f.writelines(f"\n{i},{n},{d},{d1},{dtString},Present")
 
     # ================Face Recognition=============================
     def face_recog(self):
@@ -125,19 +136,19 @@ class Face_Recognition_System:
                 n=my_cursor.fetchone()
                 n="+".join(n)
 
-                # my_cursor.execute("select roll from student where Student_id="+str(id)) 
-                # r=my_cursor.fetchone()
-                # r="+".join(r)
+                my_cursor.execute("select roll from student where roll="+str(id))
+                i=my_cursor.fetchone()
+                i="+".join(i)
 
                 my_cursor.execute("select dept from student where roll="+str(id))
                 d=my_cursor.fetchone()
                 d="+".join(d)
-
                 
                 if confidence>77:
-                    # cv2.putText(img,f"Roll:{r}",(x,y-55),cv2.FONT_HERSHEY_COMPLEX,0,8,(255,255,255),3)
+                    cv2.putText(img,f"Roll:{i}",(x,y-55),cv2.FONT_HERSHEY_COMPLEX,0.8,(255,255,255),3)
                     cv2.putText(img,f"Name:{n}",(x,y-30),cv2.FONT_HERSHEY_COMPLEX,0.8,(255,255,255),3)
                     cv2.putText(img,f"Department:{d}",(x,y-5),cv2.FONT_HERSHEY_COMPLEX,0.8,(255,255,255),3)
+                    self.mark_attendance(i,n,d)
                 else:
                     cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),3) 
                     cv2.putText(img,"Unknown Face",(x,y-5),cv2.FONT_HERSHEY_COMPLEX,0.8,(255,255,255),3)
@@ -164,10 +175,12 @@ class Face_Recognition_System:
                 break
         video_cap.release()
         cv2.destroyAllWindows()
+    
 
-
-
-
+    # ==================Function Button for Attendance============================
+    def attendance_details(self):
+        self.new_window=Toplevel(self.root)
+        self.app=Attendance(self.new_window)
 
 if __name__ == "__main__":
     root=ctk.CTk()
